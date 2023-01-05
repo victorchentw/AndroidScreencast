@@ -61,6 +61,8 @@ public final class JFrameMain extends JFrame {
     private final JButton jbExecuteKeyEvent = new JButton("Execute keycode");
     private final JButton jbKbHome = new JButton("Home");
     private final JButton jbKbMenu = new JButton("Menu");
+    private final JButton jbKbAppSwitch = new JButton("Recent App");
+    private final JButton jbKbAssist = new JButton("Assist");
     private final JButton jbKbBack = new JButton("Back");
     private final JButton jbKbSearch = new JButton("Search");
     private final JButton jbKbPhoneOn = new JButton("Call");
@@ -108,6 +110,8 @@ public final class JFrameMain extends JFrame {
         jbKbPhoneOff.setFocusable(false);
         jbExecuteKeyEvent.setFocusable(false);
         jbRecord.setFocusable(false);
+        jbKbAppSwitch.setFocusable(false);
+        jbKbAssist.setFocusable(false);
 
         jbKbHome.addActionListener(KeyboardActionListenerFactory.getInstance(InputKeyEvent.KEYCODE_HOME));
         jbKbMenu.addActionListener(KeyboardActionListenerFactory.getInstance(InputKeyEvent.KEYCODE_MENU));
@@ -116,7 +120,8 @@ public final class JFrameMain extends JFrame {
         jbKbPhoneOn.addActionListener(KeyboardActionListenerFactory.getInstance(InputKeyEvent.KEYCODE_CALL));
         jbKbPhoneOff.addActionListener(KeyboardActionListenerFactory.getInstance(InputKeyEvent.KEYCODE_ENDCALL));
         jbRecord.addActionListener(createRecordActionListener());
-
+        jbKbAppSwitch.addActionListener(KeyboardActionListenerFactory.getInstance(InputKeyEvent.KEYCODE_APP_SWITCH));
+        jbKbAssist.addActionListener(KeyboardActionListenerFactory.getInstance(InputKeyEvent.KEYCODE_ASSIST));
 
         jtbHardkeys.add(jbKbHome);
         jtbHardkeys.add(jbKbMenu);
@@ -124,6 +129,8 @@ public final class JFrameMain extends JFrame {
         jtbHardkeys.add(jbKbSearch);
         jtbHardkeys.add(jbKbPhoneOn);
         jtbHardkeys.add(jbKbPhoneOff);
+        jtbHardkeys.add(jbKbAppSwitch);
+        jtbHardkeys.add(jbKbAssist);
 
         setLayout(new BorderLayout());
         add(jtb, BorderLayout.NORTH);
