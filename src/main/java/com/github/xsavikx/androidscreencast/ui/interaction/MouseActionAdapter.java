@@ -31,7 +31,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-
+import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 @Singleton
 public final class MouseActionAdapter extends MouseAdapter {
 
@@ -79,11 +80,14 @@ public final class MouseActionAdapter extends MouseAdapter {
             dragFromX = p2.x;
             dragFromY = p2.y;
             timeFromPress = System.currentTimeMillis();
+            getLogger(MouseActionAdapter.class).info("mouseDragged x={} y={}", dragFromX, dragFromY);
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        long holdTime = System.currentTimeMillis() - timeFromPress;
+        getLogger(MouseActionAdapter.class).info("drag time{}", holdTime);
         if (timeFromPress >= ONE_SECOND) {
             final Point p2 = jp.getRawPoint(e.getPoint());
             final int xFrom = dragFromX;
@@ -91,7 +95,7 @@ public final class MouseActionAdapter extends MouseAdapter {
             final int xTo = p2.x;
             final int yTo = p2.y;
             SwingUtilities.invokeLater(() -> {
-                final SwipeCommand command = inputCommandFactory.getSwipeCommand(xFrom, yFrom, xTo, yTo, timeFromPress);
+                final SwipeCommand command = inputCommandFactory.getSwipeCommand(xFrom, yFrom, xTo, yTo, holdTime);
                 commandExecutor.execute(command);
             });
             clearState();
