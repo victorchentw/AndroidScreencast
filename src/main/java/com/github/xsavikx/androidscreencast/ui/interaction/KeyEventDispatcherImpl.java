@@ -26,12 +26,15 @@ import com.github.xsavikx.androidscreencast.dagger.MainComponentProvider;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public final class KeyEventDispatcherImpl implements KeyEventDispatcher {
 
     private final Window window;
     private CommandExecutor commandExecutor;
     private InputCommandFactory inputCommandFactory;
+    private boolean isShiftKeyPressed = false;
 
     KeyEventDispatcherImpl(Window frame) {
         this.window = frame;
@@ -39,10 +42,15 @@ public final class KeyEventDispatcherImpl implements KeyEventDispatcher {
 
     @Override
     public boolean dispatchKeyEvent(final KeyEvent e) {
+        getLogger(KeyboardActionListener.class).info("dispatchKeyEvent key{}", e);
+        // if (e.getKeyCode == VK_SHIFT){
+        //     if (e.getID() == KeyEvent.)
+        // }
         if (!window.isActive())
             return false;
         if (e.getID() == KeyEvent.KEY_TYPED) {
             final int code = KeyCodeConverter.getKeyCode(e);
+            getLogger(KeyboardActionListener.class).info("key change to{}", code);
             SwingUtilities.invokeLater(() -> {
                 final KeyCommand command = getInputCommandFactory().getKeyCommand(code);
                 getCommandExecutor().execute(command);

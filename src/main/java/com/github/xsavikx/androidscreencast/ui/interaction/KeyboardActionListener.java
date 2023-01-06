@@ -25,6 +25,8 @@ import com.github.xsavikx.androidscreencast.dagger.MainComponentProvider;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public final class KeyboardActionListener implements ActionListener {
 
@@ -34,12 +36,14 @@ public final class KeyboardActionListener implements ActionListener {
 
     KeyboardActionListener(int key) {
         this.key = key;
+        getLogger(KeyboardActionListener.class).info("KeyboardActionListener key{}", key);
     }
 
     @Override
     public void actionPerformed(final ActionEvent e) {
         SwingUtilities.invokeLater(() -> {
             final KeyCommand command = getInputCommandFactory().getKeyCommand(key);
+            getLogger(KeyboardActionListener.class).info("actionPerformed key{}", key);
             getCommandExecutor().execute(command);
         });
     }

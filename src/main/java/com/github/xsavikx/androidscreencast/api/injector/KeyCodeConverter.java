@@ -33,7 +33,8 @@ public final class KeyCodeConverter {
         int code = InputKeyEvent.KEYCODE_UNKNOWN.getCode();
         char c = e.getKeyChar();
         int keyCode = e.getKeyCode();
-        InputKeyEvent inputKeyEvent = InputKeyEvent.getByCharacterOrKeyCode(Character.toLowerCase(c), keyCode);
+        // InputKeyEvent inputKeyEvent = InputKeyEvent.getByCharacterOrKeyCode(Character.toLowerCase(c), keyCode);
+        InputKeyEvent inputKeyEvent = InputKeyEvent.getByCharacterOrKeyCode(c, keyCode);
         if (inputKeyEvent != null) {
             code = inputKeyEvent.getCode();
         }
