@@ -44,6 +44,7 @@ public final class MouseActionAdapter extends MouseAdapter {
     private int dragFromX = -1;
     private int dragFromY = -1;
     private long timeFromPress = -1;
+    private long timeFromWheel = -1;
 
     @Inject
     MouseActionAdapter(final JPanelScreen jp,
@@ -106,6 +107,7 @@ public final class MouseActionAdapter extends MouseAdapter {
         dragFromX = -1;
         dragFromY = -1;
         timeFromPress = -1;
+        timeFromWheel = -1;
     }
 
     @Override
@@ -114,5 +116,19 @@ public final class MouseActionAdapter extends MouseAdapter {
         // return;
         // JFrameMain.this.injector.injectTrackball(arg0.getWheelRotation() < 0 ?
         // -1f : 1f);
+        final Point p2 = jp.getRawPoint(arg0.getPoint());
+        long currentTime = System.currentTimeMillis();
+        if(currentTime - timeFromWheel < 50)
+            return;
+        timeFromWheel = currentTime;
+        final int delta = arg0.getWheelRotation();
+        final int x = p2.x;
+        final int yFrom = p2.y;
+        final int yTo = yFrom - (delta * 100);
+        // getLogger(MouseActionAdapter.class).info("mouseWheelMoved X={} y={} to {} delta={}", x, yFrom, yTo, delta);
+        SwingUtilities.invokeLater(() -> {
+            final SwipeCommand command = inputCommandFactory.getSwipeCommand(x, yFrom, x, yTo, 40);
+            commandExecutor.execute(command);
+        });
     }
 }
