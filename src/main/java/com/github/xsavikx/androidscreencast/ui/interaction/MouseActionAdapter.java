@@ -18,6 +18,7 @@
 package com.github.xsavikx.androidscreencast.ui.interaction;
 
 import com.github.xsavikx.androidscreencast.api.command.SwipeCommand;
+import com.github.xsavikx.androidscreencast.api.command.DragAndDropCommand;
 import com.github.xsavikx.androidscreencast.api.command.TapCommand;
 import com.github.xsavikx.androidscreencast.api.command.executor.CommandExecutor;
 import com.github.xsavikx.androidscreencast.api.command.factory.InputCommandFactory;
@@ -60,11 +61,12 @@ public final class MouseActionAdapter extends MouseAdapter {
 
     @Override
     public void mouseClicked(final MouseEvent e) {
-        if (injector != null && e.getButton() == MouseEvent.BUTTON3) {
+        if (injector != null && e.getButton() == MouseEvent.BUTTON2) {  //Button2 = wheel on mouse
             injector.toggleOrientation();
             e.consume();
             return;
         }
+        if(e.getButton() == MouseEvent.BUTTON3) return;
         final Point p2 = jp.getRawPoint(e.getPoint());
         if (p2.x > 0 && p2.y > 0) {
             SwingUtilities.invokeLater(() -> {
@@ -88,17 +90,17 @@ public final class MouseActionAdapter extends MouseAdapter {
     @Override
     public void mouseReleased(MouseEvent e) {
         long holdTime = System.currentTimeMillis() - timeFromPress;
-        getLogger(MouseActionAdapter.class).info("drag time{}", holdTime);
-        if (timeFromPress >= ONE_SECOND) {
-            final Point p2 = jp.getRawPoint(e.getPoint());
-            final int xFrom = dragFromX;
-            final int yFrom = dragFromY;
-            final int xTo = p2.x;
-            final int yTo = p2.y;
-            SwingUtilities.invokeLater(() -> {
-                final SwipeCommand command = inputCommandFactory.getSwipeCommand(xFrom, yFrom, xTo, yTo, holdTime);
-                commandExecutor.execute(command);
-            });
+        final Point p2 = jp.getRawPoint(e.getPoint());
+        final int xFrom = dragFromX;
+        final int yFrom = dragFromY;
+        final int xTo = p2.x;
+        final int yTo = p2.y;
+        
+        if(e.getButton() == MouseEvent.BUTTON3){
+            dispatchMouseButton3(xFrom, yFrom, xTo, yTo, holdTime);
+            clearState();
+        }else{
+            dispatchMouseButton2(xFrom, yFrom, xTo, yTo, holdTime);
             clearState();
         }
     }
@@ -130,5 +132,55 @@ public final class MouseActionAdapter extends MouseAdapter {
             final SwipeCommand command = inputCommandFactory.getSwipeCommand(x, yFrom, x, yTo, 40);
             commandExecutor.execute(command);
         });
+    }
+
+    void dispatchMouseButton2(int xFrom, int yFrom, int xTo, int yTo, long duration){
+        if (timeFromPress >= ONE_SECOND) {
+            getLogger(MouseActionAdapter.class).info("Btn2 drag time{}", duration);
+            SwingUtilities.invokeLater(() -> {
+                final SwipeCommand command = inputCommandFactory.getSwipeCommand(xFrom, yFrom, xTo, yTo, duration);
+                commandExecutor.execute(command);
+            });
+        }    
+
+    }
+    void dispatchMouseButton3(int xFrom, int yFrom, int xTo, int yTo, long duration){
+        long newHoldTime;
+        int newYTo;
+        int newXFrom;
+        int newYFrom;
+        if(timeFromPress < 0){
+            newHoldTime = 500;
+            newYTo = yTo + 10;
+            newXFrom = xTo;
+            newYFrom = yTo;
+        }
+        else if(duration < 500){
+            newHoldTime = 500;
+            newYTo = yTo;
+            newXFrom = xFrom;
+            newYFrom = yFrom;
+        }
+        else{
+            newHoldTime = duration;
+            newYTo = yTo;
+            newXFrom = xFrom;
+            newYFrom = yFrom;
+        }
+        // if(newXFrom == -1){
+        // }else{
+
+        // }
+        getLogger(MouseActionAdapter.class).info("Btn3 new draw newXFrom{} newYFrom{} xTo{} newYTo{} newHoldTime{}", newXFrom, newYFrom, xTo, newYTo, newHoldTime);
+        sendMouseDragAndDropCommand(newXFrom, newYFrom, xTo, newYTo, newHoldTime);
+
+    }
+
+    void sendMouseDragAndDropCommand(int xFrom, int yFrom, int xTo, int yTo, long duration){
+        SwingUtilities.invokeLater(() -> {
+            final DragAndDropCommand command = inputCommandFactory.getDragAndDropCommand(xFrom, yFrom, xTo, yTo, duration);
+            commandExecutor.execute(command);
+        });
+
     }
 }

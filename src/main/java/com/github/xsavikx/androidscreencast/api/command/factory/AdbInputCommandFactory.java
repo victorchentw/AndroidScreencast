@@ -19,6 +19,7 @@ package com.github.xsavikx.androidscreencast.api.command.factory;
 
 import com.github.xsavikx.androidscreencast.api.command.KeyCommand;
 import com.github.xsavikx.androidscreencast.api.command.SwipeCommand;
+import com.github.xsavikx.androidscreencast.api.command.DragAndDropCommand;
 import com.github.xsavikx.androidscreencast.api.command.TapCommand;
 import com.github.xsavikx.androidscreencast.api.injector.InputKeyEvent;
 import org.slf4j.Logger;
@@ -54,6 +55,13 @@ public final class AdbInputCommandFactory implements InputCommandFactory {
         final SwipeCommand returnSwipeCommand = new SwipeCommand(x1, y1, x2, y2, duration);
         log().debug(String.valueOf(returnSwipeCommand));
         return returnSwipeCommand;
+    }
+
+    @Override
+    public DragAndDropCommand getDragAndDropCommand(final int x1, final int y1, final int x2, final int y2, final long duration) {
+        final DragAndDropCommand returnDragAndDropCommand = new DragAndDropCommand(x1, y1, x2, y2, duration);
+        log().debug(String.valueOf(returnDragAndDropCommand));
+        return returnDragAndDropCommand;
     }
 
     @Override
